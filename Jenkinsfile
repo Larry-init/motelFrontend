@@ -1,22 +1,21 @@
 pipeline {
-
     agent any
-
+     
     stages {
-        stage('build') {
-            steps{
-                sh 'sudo apt install npm'
-                sh 'npm i'
+        stage('Ok') {
+            steps {
+                echo "Ok"
             }
-        }
-        stage ('inject Variable'){
-            steps{
-                withCredentials([file(credentialsId: 'file', variable: 'PIPELINE_ENV')]) { load "$PIPELINE_ENV"}
-                sh 'echo ${appsettings} | base64 --decode > .env'
-                sh 'ls -a'
-                    
-                }
-            }
-            
         }
     }
+    post {
+        always {
+            emailext(
+  subject: "foo",
+  to: "mlanreadeniji@gmail.com",
+  body: """<p>FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+  <p>Console output (last 250 lines):<hr><pre>\${BUILD_LOG}</pre></p>""" )
+
+        }
+    }
+}
